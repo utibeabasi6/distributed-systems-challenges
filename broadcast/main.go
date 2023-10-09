@@ -45,8 +45,8 @@ func main() {
 			gossipResp["type"] = "broadcast"
 			for i := 0; i < len(nodes); i++ {
 				reciever := nodes[i]
-				for i := 0; i < len(messages); i++ {
-					gossipResp["messages"] = messages[i]
+				for j := 0; j < len(messages); j++ {
+					gossipResp["message"] = messages[j]
 					node.Send(reciever, gossipResp)
 				}
 			}
@@ -73,6 +73,22 @@ func main() {
 		json.Unmarshal(msg.Body, &msgBody)
 		msgResp["type"] = "topology_ok"
 		topology = msgBody.Topology
+		var allMap map[string]bool = make(map[string]bool)
+		all := []string{}
+		for _, v := range topology {
+			all = append(all, v...)
+		}
+
+		for _, v := range all {
+			allMap[v] = true
+		}
+
+		all = []string{}
+
+		for k, _ := range allMap {
+			all = append(all, k)
+		}
+		topology[node.ID()] = all
 		return node.Reply(msg, msgResp)
 	})
 
